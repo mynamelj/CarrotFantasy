@@ -1,0 +1,2 @@
+# Only inspection and semantic verification require this dependency.
+lupa==2.8

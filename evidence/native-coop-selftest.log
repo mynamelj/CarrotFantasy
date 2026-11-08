@@ -1,0 +1,10 @@
+GAMEMODE_THEME id=1 errors=0
+GAMEMODE_WEEKLY id=2 errors=0
+GAMEMODE_WEEKLY_LOCAL id=5 errors=0
+GAMEMODE_DAILY_MATCH id=3 errors=0
+GAMEMODE_STAR_WAY id=7 errors=0
+GAMEMODE_CANDY id=4 errors=0
+GAMEMODE_COLLECT id=8 errors=0
+GAMEMODE_COOPERATION id=9 errors=0
+native-test=true nil
+jit=true

@@ -1,0 +1,28 @@
+# Local game inputs, captures and generated builds
+/private/
+/build/
+/dist/
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Installation packages, native binaries and credentials
+*.apk
+*.aab
+*.apks
+*.xapk
+*.obb
+*.dex
+*.so
+*.dll
+*.jar
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+*.log
+!evidence/native-coin-before.log
+!evidence/native-coin-after.log
+!evidence/native-coop-selftest.log

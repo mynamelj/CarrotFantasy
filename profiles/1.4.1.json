@@ -1,0 +1,49 @@
+{
+  "version": "1.4.1",
+  "package": "com.feiyu.luobo4",
+  "apk": "d3fb1c8ec3de33ec8a34a357aff1d4678ac40f9883bb8119efbec8b5406aa5ba",
+  "files": [
+    {
+      "path": "0928abea8ad0a5553ced1b13fb081caa/src/1737926756/3543428409",
+      "original": "02f25e78303f8dbc8dd2d46621634ebe765b0e9ae80d36e434869480cfcf733f",
+      "patched": "c48383fcfcebc1561abb93a26812f5bb9c93187d96e4b4f81501ba9c9de6d97b",
+      "previous": [
+        "752379683f64750af7a622e6c9ad442c2751cd684a09788cba97d80c22940587",
+        "c48383fcfcebc1561abb93a26812f5bb9c93187d96e4b4f81501ba9c9de6d97b",
+        "edbdfc6307fa57cae438d4c1a37d827187dea1a4b0b5384970d30a357ace96f7"
+      ],
+      "kind": "range",
+      "firstline": 1820
+    },
+    {
+      "path": "0928abea8ad0a5553ced1b13fb081caa/src/2859421969/4221989431",
+      "original": "32faceb731e43a7cee21c60e79e3a498f79bf1e9caab85bc47fccc7b8f67fb6f",
+      "patched": "cfb59b5a71281fe2f3747b1901b76878def0667236941e798ed35b29c831358c",
+      "previous": [
+        "088a280f025cfd9ad8516c24d9e5c8cf6a599f9252ed882567cabc4e3525e34b",
+        "555f23b8a459e71af0745de794635757d88097bed1c5856fcba7843d59a214c8",
+        "cfb59b5a71281fe2f3747b1901b76878def0667236941e798ed35b29c831358c",
+        "d04ab7ab63b8e4965b959721274d3dea032402d27072114a1ac197da73ee7478"
+      ],
+      "kind": "money",
+      "firstline": 3569
+    },
+    {
+      "path": "42d940292c5e7c5e44e182eaaf84b7fa/src/2859421969/4221989431",
+      "original": "17691cd84d837f44c9e2824d8c966e9cee1b8bfe3096c85c8fa642a8ed2f4098",
+      "patched": "a3cc81803d2ccd9c9f660f7f4485d2d0d0db76a87488a9abc07aba6c18fb59e9",
+      "previous": [
+        "5e963f2ffebcf0d00bcc09d0b1c00fe858612a4f16052a58274fdfc547695839",
+        "69ae75d69fb3318e4399e4183ab29f555748927fb6557daa61f07a1dc514bb86",
+        "a3cc81803d2ccd9c9f660f7f4485d2d0d0db76a87488a9abc07aba6c18fb59e9",
+        "e730656d7174a55753155298e8359b8c481c34b780e830ec92d4326c391af654"
+      ],
+      "kind": "money",
+      "firstline": 3563
+    }
+  ],
+  "bootstrap_assets": [
+    "assets/src/1926883983/1237781733",
+    "assets/src/1926883983/9639647"
+  ]
+}

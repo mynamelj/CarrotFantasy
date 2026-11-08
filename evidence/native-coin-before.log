@@ -1,0 +1,37 @@
+GAMEMODE_THEME iteration=384 delta=40 expected=400
+GAMEMODE_THEME iteration=386 delta=40 expected=400
+GAMEMODE_THEME iteration=387 delta=40 expected=400
+GAMEMODE_THEME iteration=388 delta=40 expected=400
+GAMEMODE_THEME id=1 errors=83
+GAMEMODE_WEEKLY iteration=1 delta=40 expected=400
+GAMEMODE_WEEKLY iteration=2 delta=40 expected=400
+GAMEMODE_WEEKLY iteration=3 delta=40 expected=400
+GAMEMODE_WEEKLY iteration=4 delta=40 expected=400
+GAMEMODE_WEEKLY id=2 errors=390
+GAMEMODE_WEEKLY_LOCAL iteration=1 delta=40 expected=400
+GAMEMODE_WEEKLY_LOCAL iteration=2 delta=40 expected=400
+GAMEMODE_WEEKLY_LOCAL iteration=3 delta=40 expected=400
+GAMEMODE_WEEKLY_LOCAL iteration=4 delta=40 expected=400
+GAMEMODE_WEEKLY_LOCAL id=5 errors=390
+GAMEMODE_DAILY_MATCH iteration=1 delta=40 expected=400
+GAMEMODE_DAILY_MATCH iteration=2 delta=40 expected=400
+GAMEMODE_DAILY_MATCH iteration=3 delta=40 expected=400
+GAMEMODE_DAILY_MATCH iteration=4 delta=40 expected=400
+GAMEMODE_DAILY_MATCH id=3 errors=390
+GAMEMODE_STAR_WAY iteration=1 delta=40 expected=400
+GAMEMODE_STAR_WAY iteration=2 delta=40 expected=400
+GAMEMODE_STAR_WAY iteration=3 delta=40 expected=400
+GAMEMODE_STAR_WAY iteration=4 delta=40 expected=400
+GAMEMODE_STAR_WAY id=7 errors=390
+GAMEMODE_CANDY iteration=1 delta=40 expected=400
+GAMEMODE_CANDY iteration=2 delta=40 expected=400
+GAMEMODE_CANDY iteration=3 delta=40 expected=400
+GAMEMODE_CANDY iteration=4 delta=40 expected=400
+GAMEMODE_CANDY id=4 errors=390
+GAMEMODE_COLLECT iteration=1 delta=40 expected=400
+GAMEMODE_COLLECT iteration=2 delta=40 expected=400
+GAMEMODE_COLLECT iteration=3 delta=40 expected=400
+GAMEMODE_COLLECT iteration=4 delta=40 expected=400
+GAMEMODE_COLLECT id=8 errors=390
+native-test=true nil
+jit=true
