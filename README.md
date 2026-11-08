@@ -11,6 +11,8 @@
 
 ## 使用最新版
 
+第一次安装请看 [完整使用教程：下载、查询端口、安装和恢复](docs/INSTALL.md)。教程也说明手机是否可用，以及哪些情况需要重新安装补丁。只使用现成补丁无需安装 Python。
+
 可下载仓库中的 [最新版补丁 ZIP](releases/CarrotFantasy4_1.4.1_MuMu-coop-gold-only-patch.zip)，解压后运行安装脚本。也可以直接使用 [patches/latest](patches/latest)。
 
 以当前机器的 MuMu安卓设备-2 为例，ADB 地址是 `127.0.0.1:16448`。其他机器应先通过 MuMuManager 的 `info -v all` 查询实际地址。
