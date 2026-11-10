@@ -23,7 +23,7 @@ def safe_path(value):
     return Path(*PurePosixPath(value).parts)
 
 
-def build(profile_path, input_root, output_root):
+def build(profile_path, input_root, output_root, coop_owned_range=False, no_donation_cooldown=False):
     if not __debug__:
         raise ValueError("Run Python without -O so bytecode assertions stay enabled.")
     profile = json.loads(profile_path.read_text(encoding="utf-8-sig"))
@@ -38,7 +38,9 @@ def build(profile_path, input_root, output_root):
         if digest(raw) != record["original"]:
             raise ValueError(f"Clean input hash mismatch: {relative}")
         decoded = decode(raw)
-        patched = patch_chunk(decoded, record["firstline"])
+        patched = patch_chunk(decoded, record["firstline"],
+                              coop_owned_range=coop_owned_range and record["kind"] == "range",
+                              no_donation_cooldown=no_donation_cooldown and record["kind"] == "money")
         if record["kind"] == "money":
             patched = stabilize_money(patched)
         elif record["kind"] != "range":
@@ -65,6 +67,10 @@ def build(profile_path, input_root, output_root):
         "apk": profile["apk"],
         "files": [item for _, _, item in transformed],
     }
+    if coop_owned_range:
+        manifest["coop_owned_range"] = True
+    if no_donation_cooldown:
+        manifest["no_donation_cooldown"] = True
     for relative, encoded, _ in transformed:
         target = output_root / "payload" / relative
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -88,8 +94,13 @@ def main():
     parser.add_argument("--profile", type=Path, required=True)
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--coop-owned-range", action="store_true",
+                        help="Enable full-map range for the local player's co-op towers.")
+    parser.add_argument("--no-donation-cooldown", action="store_true",
+                        help="Skip the local cooldown after confirming a co-op donation.")
     args = parser.parse_args()
-    print(build(args.profile, args.input, args.output))
+    print(build(args.profile, args.input, args.output, args.coop_owned_range,
+                args.no_donation_cooldown))
 
 
 if __name__ == "__main__":

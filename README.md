@@ -5,15 +5,15 @@
 | 模式 | 关内正向金币收入 | 炮塔通用射程 |
 | --- | --- | --- |
 | 经典主题、周赛、本地周赛、日赛、星途、糖果、收集活动 | 10 倍 | 覆盖全图 |
-| 双人合作 | 自己的收入 10 倍 | 游戏原始射程 |
+| 双人合作 | 自己的收入 10 倍 | 自己的炮塔覆盖全图，队友炮塔使用原始射程 |
 
-倍率作用于关内收入。开局金额、建造与升级支出、出售退款按原逻辑处理。双人合作只修改本机自己的金币入口。当前实现使用原签名 APK 加模拟器本地热更新脚本。
+倍率作用于关内收入。开局金额、建造与升级支出、出售退款按原逻辑处理。双人合作换区后按炮塔的新归属重算射程。赠送队友金币可以连续操作，每笔仍按游戏显示的金额扣款。当前实现使用原签名 APK 加模拟器本地热更新脚本。
 
 ## 使用最新版
 
 第一次安装请看 [完整使用教程：下载、查询端口、安装和恢复](docs/INSTALL.md)。教程也说明手机是否可用，以及哪些情况需要重新安装补丁。只使用现成补丁无需安装 Python。
 
-可下载仓库中的 [最新版补丁 ZIP](releases/CarrotFantasy4_1.4.1_MuMu-coop-gold-only-patch.zip)，解压后运行安装脚本。也可以直接使用 [patches/latest](patches/latest)。
+可下载仓库中的 [最新版补丁 ZIP](releases/CarrotFantasy4_1.4.1_MuMu-coop-owned-range-no-cooldown-patch.zip)，解压后运行安装脚本。也可以直接使用 [patches/latest](patches/latest)。
 
 以当前机器的 MuMu安卓设备-2 为例，ADB 地址是 `127.0.0.1:16448`。其他机器应先通过 MuMuManager 的 `info -v all` 查询实际地址。
 
@@ -37,7 +37,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\patches\latest\Apply-Carro
 
 可将下面这段文字直接发给没有历史上下文的新对话。
 
-> 请阅读 https://github.com/mynamelj/CarrotFantasy 的 AGENTS.md 和 docs/UPDATING.md。目标是适配本地最新保卫萝卜4更新。单人模式为10倍关内金币收入加全图射程，双人合作仅保留自己10倍关内金币收入和原始射程。先核对当前版本、干净脚本和模式，再生成带校验和备份的补丁，保留金币函数的定向JIT修复，并完成宿主回归及游戏原生VM长时间入账测试。APK和原始资源保存在private目录，提交前运行tools/audit_upload.py。请在完成当前对局后再重启实例。
+> 请阅读 https://github.com/mynamelj/CarrotFantasy 的 AGENTS.md 和 docs/UPDATING.md。目标是适配本地最新保卫萝卜4更新。单人模式为 10 倍关内金币收入加全图射程。双人合作为自己 10 倍关内金币收入、自己炮塔全图射程、队友炮塔原始射程，以及赠送金币无本机冷却。先核对当前版本、干净脚本和模式，再生成带校验和备份的补丁，保留金币函数的定向 JIT 修复，并完成宿主回归及游戏原生 VM 长时间入账测试。APK 和原始资源保存在 private 目录，提交前运行 tools/audit_upload.py。请在完成当前对局后再重启实例。
 
 ## 从干净脚本重建
 
@@ -46,10 +46,10 @@ Python 3.10 及以上版本可运行构建工具，语义检查另需 `requireme
 ```powershell
 python -m pip install -r requirements.txt
 python tools/capture_cache.py --adb $adb --serial $serial --version 1.4.1 --output private/clean-cache --use-backups
-python tools/build_patch.py --profile profiles/1.4.1.json --input private/clean-cache --output build/rebuilt
+python tools/build_patch.py --profile profiles/1.4.1.json --input private/clean-cache --output build/rebuilt --coop-owned-range --no-donation-cooldown
 python tools/verify_patch.py build/rebuilt --baseline patches/latest
 ```
 
 这里的 `--use-backups` 用于已经安装过本仓库补丁且存在原脚本备份的实例。在全新干净实例上采集时省略此参数。`private` 和 `build` 是本地工作目录。上传内容由 `.gitignore` 和发布前检查脚本共同限制。
 
-最新补丁于 2026-11-08 在 MuMu安卓设备-2 安装。用户确认过双人合作的本机 10 倍金币生效，并要求移除会影响双方的全图射程。最终版本已完成模式检查和文件校验，验证边界见验证文档。
+最新补丁在 MuMu安卓设备-2 安装并通过文件校验。用户确认双人合作的归属射程与赠送无冷却功能均可运行。详见 [验证记录](docs/VALIDATION.md)。

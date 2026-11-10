@@ -10,9 +10,16 @@
 $ErrorActionPreference = 'Stop'
 $package = 'com.feiyu.luobo4'
 $data = "/data/user/0/$package/files"
-$cache = "$data/hotupdate/1.4.1"
-$backup = "$data/.carrot-original-1.4.1"
 $manifest = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'manifest.json') -Raw | ConvertFrom-Json
+$gameVersion = '1.4.1'
+if ($manifest.PSObject.Properties.Name -contains 'version') {
+    $gameVersion = $manifest.version
+}
+if ($gameVersion -notmatch '^\d+(?:\.\d+)+$') {
+    throw 'Invalid manifest version.'
+}
+$cache = "$data/hotupdate/$gameVersion"
+$backup = "$data/.carrot-original-$gameVersion"
 
 function Invoke-Adb([string[]]$Command) {
     $result = & $Adb -s $Serial @Command
@@ -33,10 +40,10 @@ if ((Invoke-Adb @('shell', 'id -u')) -ne '0') {
 
 $installed = Invoke-Adb @('shell', "pm path $package")
 if ($installed -notmatch '^package:(/data/app/[^\s\x27]+/base\.apk)$') {
-    throw 'Install the original 1.4.1 APK on this instance first.'
+    throw 'Install the original game APK on this instance first.'
 }
 if ((Get-RemoteHash $Matches[1]) -ne $manifest.apk) {
-    throw 'The installed APK differs from the original 1.4.1 package.'
+    throw 'The installed APK differs from the expected original package.'
 }
 
 $work = @(
@@ -118,6 +125,12 @@ try {
 
 if ($Restore) {
     Write-Output 'Original update files restored.'
+} elseif ($manifest.coop_owned_range) {
+    Write-Output 'Installed full-map range for locally owned co-op towers and local 10x gold. Launch Carrot Fantasy 4 normally.'
 } else {
     Write-Output 'Co-op now uses normal range and local 10x gold. Solo modes retain 10x gold and full-map range. Launch Carrot Fantasy 4 normally.'
+}
+
+if (-not $Restore -and $manifest.no_donation_cooldown) {
+    Write-Output 'The local co-op gold donation cooldown is disabled.'
 }

@@ -64,9 +64,13 @@ payload 以四字节字为单位处理。前 512 个字连续 XOR，中间每隔
 
 ## 最新射程实现
 
-在 Tower.setShootRange 将原射程和 scale 计算完成后、传入 shootRange.setValue 前，根据七种单人模式把 r7 设为 4096。合作模式保留游戏计算出的值。这里修改的是通用炮塔射程，部分特殊弹道或技能还可能有自己的几何逻辑。
+在 Tower.setShootRange 将原射程和 scale 计算完成后、传入 shootRange.setValue 前，七种单人模式把 r7 设为 4096。合作模式仅在炮塔的原始 `ownerID` 非空、非零且等于 `_data.DataModel:getUserId()` 时设置该值。这里修改的是通用炮塔射程，部分特殊弹道或技能还可能有自己的几何逻辑。
 
-此前合作全图射程会在本机模拟中影响双方炮塔，用户确认这一现象后要求移除，因此合作条件只存在于金币模块。
+蓝色队友角标由 `Tower.addPartnerFlag` 按归属添加。直接读取 `ownerID` 可以避开 `getOwnerID()` 在归属为 0 时回退到本机 ID 的行为。换区走 `Tower.setOwnerID`，归属改变且炮塔已算过射程时调用同一个射程入口。
+
+## 赠送金币冷却
+
+两份 `GameLayer.lua` 的赠送确认函数保留 `coin_num` 和 `cooperationDonateMoney` 调用，跳过本机按钮的 `startCoolingDown`，随后通过原取消选择流程恢复按钮并关闭弹窗。余额检查、扣款和合作数据上报仍由原赠送函数处理。
 
 ## 金币 JIT 修复
 

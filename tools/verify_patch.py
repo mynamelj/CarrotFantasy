@@ -8,7 +8,8 @@ from pathlib import Path
 
 from asset_codec import decode
 from bytecode_patch import (
-    ENABLED_GAME_MODES, SINGLE_PLAYER_MODES, ad, read_uleb, uleb,
+    COOP_MODE, ENABLED_GAME_MODES, OWNER_RANGE_KEYS, OWNER_SETTER_KEYS, RANGE_KEYS,
+    SINGLE_PLAYER_MODES, abc, ad, owned_range_gate, read_uleb, uleb,
 )
 
 
@@ -17,13 +18,17 @@ from bytecode_patch import (
 OPCODES = {
     0x01: 1,       # ISGE
     0x04: 4,       # ISEQV
+    0x05: 5,       # ISNEV
     0x0C: 39,      # KSTR
     0x0E: 41,      # KSHORT
     0x10: 43,      # KPRI
+    0x12: 12,      # ISTC
+    0x18: 18,      # MOV
     0x2C: 34,      # MULVV
     0x3A: 54,      # GGET
     0x3C: 56,      # TGETV
     0x3D: 57,      # TGETS
+    0x41: 61,      # TSETS
     0x46: 66,      # CALL
     0x58: 88,      # JMP
 }
@@ -74,6 +79,7 @@ def verify(bundle, baseline=None):
     modes = {key: i for i, key in enumerate(ENABLED_GAME_MODES, 1)}
     modes.update({b"GAMEMODE_PVP": 99, b"GAMEMODE_NULL": 0})
     manifest = json.loads((bundle / "manifest.json").read_text(encoding="utf-8-sig"))
+    coop_owned_range = manifest.get("coop_owned_range", False)
     old = None
     if baseline:
         old = json.loads((baseline / "manifest.json").read_text(encoding="utf-8-sig"))
@@ -89,19 +95,54 @@ def verify(bundle, baseline=None):
         rows = prototypes(data)
         if entry["path"].endswith("/3543428409"):
             count = 7 + 5 * len(SINGLE_PLAYER_MODES)
+            strings = RANGE_KEYS + SINGLE_PLAYER_MODES
+            if coop_owned_range:
+                count += len(owned_range_gate(0))
+                strings += OWNER_RANGE_KEYS
             candidates = [row for row in rows if row[0][1] == 1 and len(row[2]) == 68 + count]
             assert len(candidates) == 1
-            _, gc_count, full_code = candidates[0]
+            header, gc_count, full_code = candidates[0]
             code = full_code[40:40 + count]
-            strings = (b"_gl", b"playerGameMode", b"gameMode") + SINGLE_PLAYER_MODES
             values = dict(zip(range(gc_count - len(strings), gc_count), strings))
-            chunk = test_chunk(code, gc_count, values, 8, 7)
+            chunk = test_chunk(code, gc_count, values, 8, 7, header[2])
+            get_user_id = runtime.eval(b"function(self) return self.userId end")
+            model = runtime.table_from({b"userId": 101, b"getUserId": get_user_id})
+            data_model = runtime.table_from({b"DataModel": model})
             for mode in list(modes.values()) + [None, 123]:
                 gl = runtime.table_from({
                     b"playerGameMode": mode, b"gameMode": runtime.table_from(modes),
                 })
-                expected = 4096 if mode in range(1, len(SINGLE_PLAYER_MODES) + 1) else 160
-                assert execute(chunk, runtime.table_from({b"_gl": gl}), *(0,) * 7, 160) == expected
+                env = runtime.table_from({b"_gl": gl, b"_data": data_model})
+                for owner in (101, 202, 0, None):
+                    eligible = mode in range(1, len(SINGLE_PLAYER_MODES) + 1) or (
+                        coop_owned_range and mode == modes[COOP_MODE] and owner == 101
+                    )
+                    tower = runtime.table_from({b"ownerID": owner})
+                    assert execute(chunk, env, tower, *(0,) * 6, 160) == (4096 if eligible else 160)
+            if coop_owned_range:
+                setters = [row for row in rows if row[0][1] == 2 and
+                           row[1] == 1 + len(OWNER_SETTER_KEYS) and
+                           row[2][:2] == [abc(0x3d, 3, 0, 0), ad(0x12, 2, 1)]]
+                assert len(setters) == 1
+                setter_header, setter_gc, setter_code = setters[0]
+                setter_keys = dict(enumerate((b"ownerID",) + OWNER_SETTER_KEYS))
+                setter = test_chunk(setter_code[:-1], setter_gc, setter_keys, 2, 0, setter_header[2])
+                recalc = runtime.eval(b"function(self) self.refreshed = self.ownerID end")
+                for mode, owner, new_owner, initialized, refreshed in (
+                    (modes[COOP_MODE], 101, 202, True, 202),
+                    (modes[COOP_MODE], 202, 101, True, 101),
+                    (modes[COOP_MODE], 101, None, True, 0),
+                    (modes[COOP_MODE], 101, 101, True, None),
+                    (modes[COOP_MODE], 101, 202, False, None),
+                    (modes[b"GAMEMODE_THEME"], 101, 202, True, None),
+                ):
+                    gl[b"playerGameMode"] = mode
+                    tower = runtime.table_from({
+                        b"ownerID": owner, b"json": {} if initialized else None, b"setShootRange": recalc,
+                    })
+                    execute(setter, env, tower, new_owner)
+                    assert tower[b"ownerID"] == (new_owner or 0)
+                    assert tower[b"refreshed"] == refreshed
         else:
             count = 16 + 5 * len(ENABLED_GAME_MODES)
             candidates = [row for row in rows if row[0][1] == 5 and len(row[2]) == 164 + count]
@@ -123,6 +164,48 @@ def verify(bundle, baseline=None):
                     eligible = mode in range(1, len(ENABLED_GAME_MODES) + 1)
                     expected = amount * 10 if eligible and amount > 0 and reason != 3 else amount
                     assert execute(chunk, env, None, amount, reason) == expected
+            if manifest.get("no_donation_cooldown"):
+                confirmations = [
+                    row for row in rows if row[0][1:3] == bytes([1, 9]) and
+                    row[1] == 16 and len(row[2]) == 26 and row[2][15] == abc(0x3d, 5, 0, 8)
+                ]
+                assert len(confirmations) == 1
+                confirm_header, confirm_gc, confirm_code = confirmations[0]
+                assert confirm_code[-1] == ad(0x1e, 0, 1)
+                keys = (
+                    b"_json", b"getActivityCooperationProto", b"_data", b"CooperationData",
+                    b"getCurActivityId", b"tostring", b"coin_num", b"coin_cd",
+                    b"cooperationDonateMoney", b"spBottomToolBar", b"donateMoneyButton",
+                    b"startCoolingDown", b"setSelectedBtnIndex", b"_gl",
+                    b"bottomToolBtnIndex", b"BTN_INDEX_NULL",
+                )
+                confirm = test_chunk(confirm_code[:-1], confirm_gc, dict(enumerate(keys)),
+                                     1, 0, confirm_header[2])
+                confirm_env, layer = runtime.eval(b"""(function()
+                    local toolbar = {
+                        donateMoneyButton = {startCoolingDown = function() error("cooldown") end},
+                        setSelectedBtnIndex = function(self, index) self.selection = index end,
+                    }
+                    local env = {
+                        _json = {getActivityCooperationProto = function()
+                            return {["17"] = {coin_num = 300, coin_cd = 60}}
+                        end},
+                        _data = {CooperationData = {getCurActivityId = function() return 17 end}},
+                        _gl = {bottomToolBtnIndex = {BTN_INDEX_NULL = 0}},
+                        tostring = tostring,
+                    }
+                    local layer = {
+                        spBottomToolBar = toolbar,
+                        sent = 0,
+                        cooperationDonateMoney = function(self, amount) self.sent = self.sent + amount end,
+                    }
+                    return env, layer
+                end)()""")
+                for amount in (300, 600):
+                    layer[b"spBottomToolBar"][b"selection"] = 1
+                    execute(confirm, confirm_env, layer)
+                    assert layer[b"sent"] == amount
+                    assert layer[b"spBottomToolBar"][b"selection"] == 0
             # Verify the root executes jit.off with this class's function and
             # recursive=true. This catches accidental removal of the stable fix.
             header, root_gc, root_code = rows[-1]

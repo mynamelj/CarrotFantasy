@@ -5,7 +5,7 @@
 | 模式 | 当前效果 |
 | --- | --- |
 | 单人主题、周赛、本地周赛、日赛、星途、糖果、收集活动 | 10 倍关内正向金币收入，加全图通用炮塔射程 |
-| 双人合作 | 仅自己的关内正向金币收入 10 倍，双方炮塔保持原始射程 |
+| 双人合作 | 自己的关内正向金币收入 10 倍，自己的炮塔全图射程，队友炮塔原始射程，赠送金币无本机冷却 |
 
 建造、升级支出、出售退款和开局金币保持原逻辑。金币倍率以顶部余额的实际增加值为准，飘字可能显示原掉落数。
 
@@ -13,7 +13,7 @@
 
 1. 在目标 MuMu 实例中安装对应的原签名 `保卫萝卜4_1.4.1.apk`，打开游戏完成官方热更新，再退出游戏。当前补丁同时校验 APK 和热更新脚本，其他渠道包或后续更新不保证匹配。
 2. 在该实例设置中启用 Root，按提示重启实例。请先完成当前对局，安装补丁会结束游戏进程。
-3. 下载 [补丁 ZIP](https://github.com/mynamelj/CarrotFantasy/raw/refs/heads/main/releases/CarrotFantasy4_1.4.1_MuMu-coop-gold-only-patch.zip)，完整解压，例如解压到 `D:\CarrotPatch`。
+3. 下载 [补丁 ZIP](https://github.com/mynamelj/CarrotFantasy/raw/refs/heads/main/releases/CarrotFantasy4_1.4.1_MuMu-coop-owned-range-no-cooldown-patch.zip)，完整解压，例如解压到 `D:\CarrotPatch`。
 
 解压后的目录应同时包含以下内容，不能只复制安装脚本。
 

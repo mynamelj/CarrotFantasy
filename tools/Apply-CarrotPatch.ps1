@@ -125,6 +125,12 @@ try {
 
 if ($Restore) {
     Write-Output 'Original update files restored.'
+} elseif ($manifest.coop_owned_range) {
+    Write-Output 'Installed full-map range for locally owned co-op towers and local 10x gold. Launch Carrot Fantasy 4 normally.'
 } else {
     Write-Output 'Co-op now uses normal range and local 10x gold. Solo modes retain 10x gold and full-map range. Launch Carrot Fantasy 4 normally.'
+}
+
+if (-not $Restore -and $manifest.no_donation_cooldown) {
+    Write-Output 'The local co-op gold donation cooldown is disabled.'
 }

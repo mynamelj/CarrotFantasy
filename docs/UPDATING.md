@@ -55,7 +55,9 @@ python tools/inspect_bytecode.py private/capture-new/42d940292c5e7c5e44e182eaaf8
 
 金币函数中 `_gl`、`playerGameMode`、`gameMode` 和出售类型的索引直接参与补丁。当前索引依次是 1、13、14、33、34，其中最后两个是 moneyChangeType 与 MONEY_CHANGE_TOWER_SELL。必须逐项核实。
 
-射程补丁插入到原第 40 条指令之后。原第 40 条是 `MULVV r7,r3,r7`，第 41 条是 `CALL r4,1,3`，补丁只在单人模式将传给 setValue 的 r7 改为 4096。当前目标函数中没有跳转。若新版在插入点前后新增跳转，须重新计算跨越插入点的分支目标。
+射程补丁插入到原第 40 条指令之后。原第 40 条是 `MULVV r7,r3,r7`，第 41 条是 `CALL r4,1,3`。符合单人模式或合作炮塔归属条件时，补丁把传给 setValue 的 r7 改为 4096。当前目标函数中没有跳转。若新版在插入点前后新增跳转，须重新计算跨越插入点的分支目标。
+
+校对 `Tower.setOwnerID` 的第 608 行原型与换区调用，确认归属改变后可以安全重算射程。核对两份 `GameLayer` 的赠送确认函数，当前行号为 5259 和 5269。赠送确认补丁删除 `coin_cd` 的读取和 `startCoolingDown` 调用，保留原赠送入口和关闭弹窗逻辑。版本变化时更新 `DONATION_CONFIRM_LINES` 和对应指令断言。
 
 检查金币模块根函数仍通过 `RET1` 返回类对象，确认可用的临时寄存器和常量索引。根函数末尾会调用 `jit.off` 禁止金币方法热编译。
 
@@ -70,7 +72,7 @@ python tools/inspect_bytecode.py private/capture-new/42d940292c5e7c5e44e182eaaf8
 ## 构建与验证
 
 ```powershell
-python tools/build_patch.py --profile profiles/1.4.1.json --input private/capture-new --output build/new-patch
+python tools/build_patch.py --profile profiles/1.4.1.json --input private/capture-new --output build/new-patch --coop-owned-range --no-donation-cooldown
 python tools/verify_patch.py build/new-patch
 ```
 

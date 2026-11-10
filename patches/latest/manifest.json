@@ -1,10 +1,11 @@
 {
+  "version": "1.4.1",
   "apk": "d3fb1c8ec3de33ec8a34a357aff1d4678ac40f9883bb8119efbec8b5406aa5ba",
   "files": [
     {
       "path": "0928abea8ad0a5553ced1b13fb081caa/src/1737926756/3543428409",
       "original": "02f25e78303f8dbc8dd2d46621634ebe765b0e9ae80d36e434869480cfcf733f",
-      "patched": "c48383fcfcebc1561abb93a26812f5bb9c93187d96e4b4f81501ba9c9de6d97b",
+      "patched": "a3491898b701dae1f55a5b24c3f9a95edf9a4e8b1267dee3c1ce866af04c8b01",
       "previous": [
         "752379683f64750af7a622e6c9ad442c2751cd684a09788cba97d80c22940587",
         "c48383fcfcebc1561abb93a26812f5bb9c93187d96e4b4f81501ba9c9de6d97b",
@@ -14,7 +15,7 @@
     {
       "path": "0928abea8ad0a5553ced1b13fb081caa/src/2859421969/4221989431",
       "original": "32faceb731e43a7cee21c60e79e3a498f79bf1e9caab85bc47fccc7b8f67fb6f",
-      "patched": "cfb59b5a71281fe2f3747b1901b76878def0667236941e798ed35b29c831358c",
+      "patched": "58954277e7d2305554bf15d9a3a775e1e643cd53f9dfb919e6e8a4a6d59d32d0",
       "previous": [
         "088a280f025cfd9ad8516c24d9e5c8cf6a599f9252ed882567cabc4e3525e34b",
         "555f23b8a459e71af0745de794635757d88097bed1c5856fcba7843d59a214c8",
@@ -25,7 +26,7 @@
     {
       "path": "42d940292c5e7c5e44e182eaaf84b7fa/src/2859421969/4221989431",
       "original": "17691cd84d837f44c9e2824d8c966e9cee1b8bfe3096c85c8fa642a8ed2f4098",
-      "patched": "a3cc81803d2ccd9c9f660f7f4485d2d0d0db76a87488a9abc07aba6c18fb59e9",
+      "patched": "5e2a008308fadca90b6bb79a6f00c1a68417a47d3d988ee970591a4c3a1753d9",
       "previous": [
         "5e963f2ffebcf0d00bcc09d0b1c00fe858612a4f16052a58274fdfc547695839",
         "69ae75d69fb3318e4399e4183ab29f555748927fb6557daa61f07a1dc514bb86",
@@ -33,5 +34,7 @@
         "e730656d7174a55753155298e8359b8c481c34b780e830ec92d4326c391af654"
       ]
     }
-  ]
+  ],
+  "coop_owned_range": true,
+  "no_donation_cooldown": true
 }
