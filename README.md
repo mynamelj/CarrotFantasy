@@ -9,11 +9,13 @@
 
 倍率作用于关内收入。开局金额、建造与升级支出、出售退款按原逻辑处理。双人合作换区后按炮塔的新归属重算射程。赠送队友金币可以连续操作，每笔仍按游戏显示的金额扣款。当前实现使用原签名 APK 加模拟器本地热更新脚本。
 
+单人关卡进入战斗后，建造菜单在原有炮塔后追加太阳花和水晶。关卡已有的炮塔只显示一次。追加的塔沿用游戏原价和建造规则。
+
 ## 使用最新版
 
 第一次安装请看 [完整使用教程：下载、查询端口、安装和恢复](docs/INSTALL.md)。教程也说明手机是否可用，以及哪些情况需要重新安装补丁。只使用现成补丁无需安装 Python。
 
-可下载仓库中的 [最新版补丁 ZIP](releases/CarrotFantasy4_1.4.1_MuMu-coop-owned-range-no-cooldown-patch.zip)，解压后运行安装脚本。也可以直接使用 [patches/latest](patches/latest)。
+可下载仓库中的 [最新版补丁 ZIP](releases/CarrotFantasy4_1.4.1_MuMu-sunflower-crystal-patch.zip)，解压后运行安装脚本。也可以直接使用 [patches/latest](patches/latest)。
 
 以当前机器的 MuMu安卓设备-2 为例，ADB 地址是 `127.0.0.1:16448`。其他机器应先通过 MuMuManager 的 `info -v all` 查询实际地址。
 
@@ -46,7 +48,7 @@ Python 3.10 及以上版本可运行构建工具，语义检查另需 `requireme
 ```powershell
 python -m pip install -r requirements.txt
 python tools/capture_cache.py --adb $adb --serial $serial --version 1.4.1 --output private/clean-cache --use-backups
-python tools/build_patch.py --profile profiles/1.4.1.json --input private/clean-cache --output build/rebuilt --coop-owned-range --no-donation-cooldown
+python tools/build_patch.py --profile profiles/1.4.1.json --input private/clean-cache --output build/rebuilt --coop-owned-range --no-donation-cooldown --append-solo-towers
 python tools/verify_patch.py build/rebuilt --baseline patches/latest
 ```
 

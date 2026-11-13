@@ -54,12 +54,17 @@ def main():
                 kind, parameters, count = "money", 5, 164
             elif "/src/tower/Tower.lua" in source:
                 kind, parameters, count = "range", 1, 68
+            elif source.endswith("/src/gamescene/ChessBoard.lua"):
+                kind, parameters, count = "build_selection", None, None
             else:
                 continue
             if args.use_backups:
                 saved = f"{app_files}/.carrot-original-{args.version}/{member.name}"
-                raw = adb("exec-out", f"cat '{saved}'")
-                row = inspect(raw, member.name)
+                if kind != "build_selection" or adb(
+                    "shell", f"if [ -f '{saved}' ]; then echo yes; fi"
+                ).strip() == b"yes":
+                    raw = adb("exec-out", f"cat '{saved}'")
+                    row = inspect(raw, member.name)
             candidates = [
                 p for p in row["prototypes"]
                 if p["parameters"] == parameters and p["instructions"] == count
@@ -69,11 +74,14 @@ def main():
             target = args.output / Path(*PurePosixPath(member.name).parts)
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(raw)
-            records.append({
-                "path": member.name, "kind": kind, "firstline": firstline,
+            record = {
+                "path": member.name, "kind": kind,
                 "original": hashlib.sha256(raw).hexdigest(), "previous": [],
                 "source": row["source"],
-            })
+            }
+            if kind != "build_selection":
+                record["firstline"] = firstline
+            records.append(record)
     if not records:
         raise ValueError("No supported target scripts found. Inspect the current update layout.")
     candidate = {

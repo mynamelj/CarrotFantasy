@@ -33,8 +33,33 @@
         "a3cc81803d2ccd9c9f660f7f4485d2d0d0db76a87488a9abc07aba6c18fb59e9",
         "e730656d7174a55753155298e8359b8c481c34b780e830ec92d4326c391af654"
       ]
+    },
+    {
+      "path": "0928abea8ad0a5553ced1b13fb081caa/src/2859421969/874078166",
+      "original": "e9a59677af6e5fb2ab3385aafa98822c2625083cfc22c7f1da0fdb00be53aff2",
+      "patched": "890631a2e4c90ba257d00f16d7b19761d1d863b6218e325bd46813a4143469cc",
+      "previous": [
+        "b2d0dc7a1cf7d3509ee3ee44387b60999dcc92f1a6cbee69ca0c07d843ca1159"
+      ]
+    },
+    {
+      "path": "42d940292c5e7c5e44e182eaaf84b7fa/src/2859421969/874078166",
+      "original": "3c69a8046ca6a1f2b6cad1ff27757064c224f277989fd20afb16501144622bb4",
+      "patched": "cb3480bdd21473f674cdc17cd9964fedcbd15ab061fe1ba883593fbe559c3648",
+      "previous": [
+        "26a69d674a59257c48255b37f14ca4e74baa39e80b78823bb63591be24877889"
+      ]
+    },
+    {
+      "path": "ca8b1e6bb5e3cc3a1079500450330bec/src/2859421969/874078166",
+      "original": "74ab67eb53086af150cdf278a020280ce873c732fe289dac2d185627709b217f",
+      "patched": "9a7a6955004886b0bb61ec736ebe9d3e29b47bd18008f698f9e531081d20e077",
+      "previous": [
+        "be3e499967a34e591a6e22fa64287b3f0ed1b1559853e0572bcba82e990905ec"
+      ]
     }
   ],
   "coop_owned_range": true,
-  "no_donation_cooldown": true
+  "no_donation_cooldown": true,
+  "append_sunflower": true
 }

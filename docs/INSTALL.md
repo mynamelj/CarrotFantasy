@@ -13,7 +13,7 @@
 
 1. 在目标 MuMu 实例中安装对应的原签名 `保卫萝卜4_1.4.1.apk`，打开游戏完成官方热更新，再退出游戏。当前补丁同时校验 APK 和热更新脚本，其他渠道包或后续更新不保证匹配。
 2. 在该实例设置中启用 Root，按提示重启实例。请先完成当前对局，安装补丁会结束游戏进程。
-3. 下载 [补丁 ZIP](https://github.com/mynamelj/CarrotFantasy/raw/refs/heads/main/releases/CarrotFantasy4_1.4.1_MuMu-coop-owned-range-no-cooldown-patch.zip)，完整解压，例如解压到 `D:\CarrotPatch`。
+3. 下载 [补丁 ZIP](../releases/CarrotFantasy4_1.4.1_MuMu-sunflower-crystal-patch.zip)，完整解压，例如解压到 `D:\CarrotPatch`。
 
 解压后的目录应同时包含以下内容，不能只复制安装脚本。
 

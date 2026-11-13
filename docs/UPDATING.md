@@ -63,7 +63,9 @@ python tools/inspect_bytecode.py private/capture-new/42d940292c5e7c5e44e182eaaf8
 
 ## 生成新版 profile
 
-将人工核实后的候选配置复制成 `profiles/<版本号>.json`。保留 `version`、`package`、`apk`，每个文件填写 `path`、`kind`、`firstline`、`original` 和 `previous`。
+将人工核实后的候选配置复制成 `profiles/<版本号>.json`。保留 `version`、`package`、`apk`，每个文件填写 `path`、`kind`、`original` 和 `previous`。金币和射程目标还需填写 `firstline`。
+
+选塔补丁需要采集全部参与加载的 `ChessBoard.lua` 副本。校对类的返回指令、`getBuildSelectionIds` 和 `_gl.inGameTowerIDList`，以及太阳花和水晶的 `TowerData` 和一级 `turret_proto`。菜单展示、余额变化后的刷新和关闭均使用本局列表。
 
 `previous` 仅列入本项目确实发布过、允许原地升级的脚本 SHA。缓存散列目录有变化时，新路径与旧路径分别处理。`bootstrap_assets` 只服务于可选的原生 VM 诊断，须按新 APK 中 MainScene 的实际数字文件路径更新。
 
@@ -72,7 +74,7 @@ python tools/inspect_bytecode.py private/capture-new/42d940292c5e7c5e44e182eaaf8
 ## 构建与验证
 
 ```powershell
-python tools/build_patch.py --profile profiles/1.4.1.json --input private/capture-new --output build/new-patch --coop-owned-range --no-donation-cooldown
+python tools/build_patch.py --profile profiles/1.4.1.json --input private/capture-new --output build/new-patch --coop-owned-range --no-donation-cooldown --append-solo-towers
 python tools/verify_patch.py build/new-patch
 ```
 

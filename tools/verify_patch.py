@@ -65,6 +65,64 @@ def test_chunk(code, gc_count, values, parameters, result, slots=12):
     return b"\x1bLJ\x02\x0a" + uleb(len(proto)) + proto + b"\x00"
 
 
+def verify_build_selection(runtime, data, rows):
+    load = runtime.eval(b"function(s) return assert(loadstring(s)) end")
+    util = runtime.eval(b'require("jit.util")')
+    module = load(data)
+    assert util.funcinfo(module)[b"source"].endswith(b"/src/gamescene/ChessBoard.lua")
+    header, gc_count, code = rows[-1]
+    scratch = header[2] - 3
+    assert util.funck(module, 1 - gc_count) == b"loadstring"
+    assert code[-6:] == [
+        ad(0x3A, scratch, gc_count - 2),
+        ad(0x0C, scratch + 2, gc_count - 1),
+        abc(0x46, scratch, 2, 2),
+        ad(0x18, scratch + 2, code[-1][1]),
+        abc(0x46, scratch, 1, 2),
+        ad(0x1F, code[-1][1], 2),
+    ]
+    verify = runtime.eval(b"""function(source, solo_modes)
+        local gl = {gameMode = {}, tower = {TOWER_SUN = 214, TOWER_CRYSTAL = 248}}
+        for i, name in ipairs(solo_modes) do gl.gameMode[name] = i end
+        gl.gameMode.GAMEMODE_COOPERATION = 9
+        gl.gameMode.GAMEMODE_PVP = 10
+        local proto = {['214_1'] = {}, ['248_1'] = {}}
+        local env = setmetatable({_gl = gl, _data = {TowerData = {[214] = {}, [248] = {}}},
+            _json = {turret_proto = proto}}, {__index = _G})
+        local board = {getBuildSelectionIds = function(self)
+            return {self.special, unpack(gl.inGameTowerIDList)}
+        end, special = 42}
+        local hook = assert(loadstring(source))
+        setfenv(hook, env)(board)
+        for mode = 0, 10 do
+            gl.playerGameMode = mode
+            local ids = {202, 203, 204, 205, 206}
+            gl.inGameTowerIDList = ids
+            local expected = mode >= 1 and mode <= #solo_modes
+                and '42,202,203,204,205,206,214,248' or '42,202,203,204,205,206'
+            for _ = 1, 2 do
+                assert(table.concat(board:getBuildSelectionIds(), ',') == expected)
+            end
+            assert(#ids == 5)
+        end
+        gl.playerGameMode = 1
+        local existing = {202, 214, 248}
+        gl.inGameTowerIDList = existing
+        assert(#board:getBuildSelectionIds() == 4 and gl.inGameTowerIDList == existing)
+        gl.inGameTowerIDList = {202, 248}
+        assert(table.concat(board:getBuildSelectionIds(), ',') == '42,202,248,214')
+        gl.inGameTowerIDList = {202, 214}
+        assert(table.concat(board:getBuildSelectionIds(), ',') == '42,202,214,248')
+        gl.inGameTowerIDList = {202}
+        proto['214_1'] = nil
+        assert(table.concat(board:getBuildSelectionIds(), ',') == '42,202,248')
+        gl.inGameTowerIDList = {202}
+        proto['214_1'], proto['248_1'] = {}, nil
+        assert(table.concat(board:getBuildSelectionIds(), ',') == '42,202,214')
+    end""")
+    verify(util.funck(module, -gc_count), runtime.table_from(SINGLE_PLAYER_MODES))
+
+
 def verify(bundle, baseline=None):
     if not __debug__:
         raise ValueError("Run without -O.")
@@ -85,6 +143,7 @@ def verify(bundle, baseline=None):
         old = json.loads((baseline / "manifest.json").read_text(encoding="utf-8-sig"))
         assert manifest["apk"] == old["apk"]
         assert manifest["files"] == old["files"]
+    build_selection_found = False
     for entry in manifest["files"]:
         raw = (bundle / "payload" / entry["path"]).read_bytes()
         assert hashlib.sha256(raw).hexdigest() == entry["patched"]
@@ -93,7 +152,10 @@ def verify(bundle, baseline=None):
         data = decode(raw)
         assert loadable(data)[0]
         rows = prototypes(data)
-        if entry["path"].endswith("/3543428409"):
+        if entry["path"].endswith("/874078166"):
+            verify_build_selection(runtime, data, rows)
+            build_selection_found = True
+        elif entry["path"].endswith("/3543428409"):
             count = 7 + 5 * len(SINGLE_PLAYER_MODES)
             strings = RANGE_KEYS + SINGLE_PLAYER_MODES
             if coop_owned_range:
@@ -226,6 +288,7 @@ def verify(bundle, baseline=None):
             assert len(calls) == 1 and calls[0][1] is True
             assert runtime.eval(b"function(a,b) return a==b end")(calls[0][0], target)
         print(f"PASS {entry['path']}")
+    assert build_selection_found == manifest.get("append_sunflower", False)
 
 
 def main():
